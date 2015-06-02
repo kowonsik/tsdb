@@ -105,7 +105,7 @@ elif in_metric == 'F1_R2_BLOCK_50' or in_metric == 'F2_R2_BLOCK_50' :
 	METRICS['MoldTemp1'] = load_data(in_metric + '_Mold_Temp1', in_start, in_end)
 	METRICS['MoldTemp2'] = load_data(in_metric + '_Mold_Temp2', in_start, in_end)
 	METRICS['GasTemp'] = load_data(in_metric + '_Gas_Temp', in_start, in_end)
-	METRICS['LNHTemp'] = load_data(in_metirc + '_LNH_Temp', in_start, in_end)
+	METRICS['LNHTemp'] = load_data(in_metric + '_LNH_Temp', in_start, in_end)
 	METRICS['HopperTemp'] = load_data(in_metric + '_Hopper_Temp', in_start, in_end)
 	METRICS['HVTemp'] = load_data(in_metric + '_HV_Temp', in_start, in_end)
 	METRICS['ReservedTemp1'] = load_data(in_metric + '_Reserved_Temp1', in_start, in_end)
