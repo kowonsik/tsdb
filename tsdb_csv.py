@@ -61,7 +61,7 @@ if volubility > 3:
 	csv_start = sys.argv[2].replace('/','-')
 	csv_end = sys.argv[3].replace('/','-')
 	
-	csv_name = in_metric + '-'+ re_start + '_' + re_end + '.csv' 
+	csv_name = in_metric + '-'+ csv_start + '_' + csv_end + '.csv' 
 
 	print "  sys.argv[%d],pckType = %s" % (1, in_metric)
 	print "  sys.argv[%d],pckType = %s" % (2, in_start)
