@@ -15,6 +15,7 @@ def BLOCK_70(r, block):
 
         try :
                 state=r.get(block)
+		print str(unixTime) + " : "+ block + " : " + str(state)
 
                 packets = state.split(":")
                 packet = packets[3].replace(",","")
@@ -30,11 +31,19 @@ def BLOCK_70(r, block):
                 }
                 ret = requests.post(url, data=json.dumps(data))
         except:
+		print "block_70 error"
                 pass
 
 def BLOCK_41(r, block):
         try :
-                quality=r.rpop('F1_R2_BLOCK_41')
+                quality=r.rpop(block)
+		#print time.time() + "  " + quality
+
+		if quality == 'None':
+			print block + " : None"
+			return
+
+		print str(unixTime) + " : "+ block + " : " + str(quality)
 
                 packets = quality.split(":")
                 packet = packets[3].split(",")
@@ -66,14 +75,18 @@ def BLOCK_41(r, block):
                 str_min = event_time[2:4]
                 str_sec = event_time[4:6]
 
-                s = "%s/%s/%s %s:%s:%s" % (str_year, str_month, str_day, str_hour, str_min, str_sec)
+                s = "%s/%s/%s %s:%s:%s" % ("20"+str_year, str_month, str_day, str_hour, str_min, str_sec)
                 insertT = time.mktime(time.strptime(s, "%Y/%m/%d %H:%M:%S"))
 
                 data = {
                         "metric":block+"_Snum",
                         "timestamp" : insertT,
                         "value": short_num,
+			"tags":{
+				"host":"mobis"
+				}
                 }
+
                 ret = requests.post(url, data=json.dumps(data))
 
                 data = {
@@ -81,7 +94,8 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                         "value": cycle_time,
                         "tags":{
-                                "short_num": short_num,
+                                "host":"mobis",
+                                "short_num": short_num
                                 }
                 }
                 ret = requests.post(url, data=json.dumps(data))
@@ -91,8 +105,9 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                         "value": make_time,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -101,8 +116,9 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                          "value": rot_time,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -111,8 +127,9 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                         "value": make_loc,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -121,8 +138,9 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                         "value": vp_posi,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -131,8 +149,9 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                         "value": vc_posi,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -141,8 +160,9 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                         "value": remain,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -151,18 +171,20 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                         "value": make_pres,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }       
                 ret = requests.post(url, data=json.dumps(data))
 
                 data = {
-                        "metric":block+"_Vp_Sw_pres",
+                        "metric":block+"_Vp_Sw_Pres",
                         "timestamp" : insertT,
                         "value": vp_sw_pres,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -171,8 +193,9 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                         "value": back_pres,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -181,8 +204,9 @@ def BLOCK_41(r, block):
                         "timestamp" : insertT,
                         "value": mold_in_pres,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -193,6 +217,12 @@ def BLOCK_41(r, block):
 def BLOCK_50(r, block):
         try :
                 quality=r.rpop(block)
+
+		if quality == 'None':
+			print block + " : Null"
+			return
+
+		print str(unixTime) + " : "+ block + " : " + str(quality)
 
                 packets = quality.split(":")
                 packet= packets[3].split(",")
@@ -222,7 +252,12 @@ def BLOCK_50(r, block):
                         "metric":block+"_Snum",
                         "timestamp" : insertT,
                         "value": short_num,
+                        "tags":{
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
+
                 ret = requests.post(url, data=json.dumps(data))
 
                 data = {
@@ -230,7 +265,8 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": nh_temp,
                         "tags":{
-                                "short_num": short_num,
+                                "host":"mobis",
+                                "short_num": short_num
                                 }
                 }
                 ret = requests.post(url, data=json.dumps(data))
@@ -240,8 +276,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": h1_temp,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -250,8 +287,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                          "value": h2_temp,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -260,8 +298,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": h3_temp,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -270,8 +309,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": h4_temp,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -280,8 +320,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": mold_temp1,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -290,8 +331,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": mold_temp2,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -300,8 +342,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": gas_temp,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }       
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -310,8 +353,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": lnh_temp,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -320,8 +364,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": hopper_temp,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
  
@@ -330,8 +375,9 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": hv_temp,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -340,18 +386,20 @@ def BLOCK_50(r, block):
                         "timestamp" : insertT,
                         "value": reserved_temp1,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
                 data = {
-                        "metric":block+"_Reserced_Temp2",
+                        "metric":block+"_Reserved_Temp2",
                         "timestamp" : insertT,
                         "value": reserved_temp2,
                         "tags":{
-                                "short_num": short_num,
-                        }
+                                "host":"mobis",
+                                "short_num": short_num
+                                }
                 }
                 ret = requests.post(url, data=json.dumps(data))
 
@@ -369,9 +417,11 @@ def RedisRead():
 		BLOCK_50(r,'F1_R2_BLOCK_50')
 		BLOCK_50(r,'F2_R2_BLOCK_50')
 	except:
+		print "redis read error"
 		pass
 
 while(1) : 
+	unixTime = time.time()
 	t = time.localtime()
 	tsec = t.tm_sec
 
@@ -383,6 +433,7 @@ while(1) :
 				flag = 1
 				print "start"
 				RedisRead()
+				print "end"
 		except :
 			pass
 
