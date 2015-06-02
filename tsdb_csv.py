@@ -3,6 +3,7 @@
 import csv
 import urllib2
 import time
+import sys
 
 
 def load_data(metric, start, end):
@@ -40,36 +41,82 @@ def load_data(metric, start, end):
 	return res
 
 
+volubility = len(sys.argv)
+
+
+if volubility is 1 :
+	print "  Example> python tsdb_csv.py {metric}       {from}     {to}"
+	print "         > python tsdb_csv.py F1_R2_BLOCK_41 2015/06/01 2015/06/02"
+	print "         > python tsdb_csv.py F2_R2_BLOCK_41 2015/06/01 2015/06/02"
+	print "         > python tsdb_csv.py F1_R2_BLOCK_50 2015/06/01 2015/06/02"
+	print "         > python tsdb_csv.py F2_R2_BLOCK_50 2015/06/01 2015/06/02"
+	exit()
+
+if volubility > 3:
+	in_metric = sys.argv[1]
+	in_start = sys.argv[2] + '-00:00:00'
+	in_end = sys.argv[3] + '-00:00:00'
+
+	#csv_name = sys.argv[1].replace('/','-') + "_" + sys.argv[2] + "-" + sys.argv[3] + '.csv'
+	csv_start = sys.argv[2].replace('/','-')
+	csv_end = sys.argv[3].replace('/','-')
+	
+	csv_name = in_metric + '-'+ re_start + '_' + re_end + '.csv' 
+
+	print "  sys.argv[%d],pckType = %s" % (1, in_metric)
+	print "  sys.argv[%d],pckType = %s" % (2, in_start)
+	print "  sys.argv[%d],pckType = %s" % (3, in_end)
+
 
 METRICS = {}
-#startTime = '2015/06/01-09:55:00' 
-#endTime = '2015/06/01-10:55:00' 
 #metric_41 = 'F2_R2_BLOCK_41' 
 
-METRIC_41 = 'F1_R2_BLOCK_41_' 
+#METRIC_41 = 'F1_R2_BLOCK_41' 
+#startTime = '2015/06/01-09:55:00' 
+#endTime = '2015/06/01-10:55:00' 
 
-startTime = '185m-ago' # 3h 5m
-endTime = '5m-ago' # 5m
+#startTime = '185m-ago' # 3h 5m
+#endTime = '5m-ago' # 5m
 
 #METRICS['etype1'] = load_data('gyu_RC1_thl.temperature', 820, '2015/06/01-09:55:00', '2015/06/01-09:56:00')
 #METRICS['etype2'] = load_data('gyu_RC1_thl.temperature', 830, '2015/06/01-09:55:00', '2015/06/01-09:56:00')
 
-METRICS['Snum'] = load_data(METRIC_41 + 'Snum', startTime, endTime)
-METRICS['CycleTime'] = load_data(METRIC_41 + 'Cycle_Time', startTime, endTime)
-METRICS['MakeTime'] = load_data(METRIC_41 + 'Make_Time', startTime, endTime)
-METRICS['RotTime'] = load_data(METRIC_41 + 'Rot_Time', startTime, endTime)
-METRICS['MakeLoc'] = load_data(METRIC_41 + 'Make_Loc', startTime, endTime)
-METRICS['VpPosi'] = load_data(METRIC_41 + 'Vp_Posi', startTime, endTime)
-METRICS['VcPosi'] = load_data(METRIC_41 + 'Vc_Posi', startTime, endTime)
-METRICS['Remain'] = load_data(METRIC_41 + 'Remain', startTime, endTime)
-METRICS['MakePres'] = load_data(METRIC_41 + 'Make_Pres', startTime, endTime)
-METRICS['VpSwPres'] = load_data(METRIC_41 + 'Vp_Sw_pres', startTime, endTime)
-METRICS['BackPres'] = load_data(METRIC_41 + 'Back_Pres', startTime, endTime)
-METRICS['MoldInPres'] = load_data(METRIC_41 + 'Mold_In_Pres', startTime, endTime)
+if in_metric == 'F1_R2_BLOCK_41' or in_metric == 'F2_R2_BLOCK_41' :
+	METRICS['Snum'] = load_data(in_metric + '_Snum', in_start, in_end)
+	METRICS['CycleTime'] = load_data(in_metric + '_Cycle_Time', in_start, in_end )
+	METRICS['MakeTime'] = load_data(in_metric + '_Make_Time', in_start, in_end)
+	METRICS['RotTime'] = load_data(in_metric + '_Rot_Time', in_start, in_end)
+	METRICS['MakeLoc'] = load_data(in_metric + '_Make_Loc', in_start, in_end)
+	METRICS['VpPosi'] = load_data(in_metric + '_Vp_Posi', in_start, in_end)
+	METRICS['VcPosi'] = load_data(in_metric + '_Vc_Posi', in_start, in_end)
+	METRICS['Remain'] = load_data(in_metric + '_Remain', in_start, in_end)
+	METRICS['MakePres'] = load_data(in_metric + '_Make_Pres', in_start, in_end)
+	METRICS['VpSwPres'] = load_data(in_metric + '_Vp_Sw_pres', in_start, in_end)
+	METRICS['BackPres'] = load_data(in_metric + '_Back_Pres', in_start, in_end)
+	METRICS['MoldInPres'] = load_data(in_metric + '_Mold_In_Pres',in_start, in_end)
+
+elif in_metric == 'F1_R2_BLOCK_50' or in_metric == 'F2_R2_BLOCK_50' :
+	METRICS['Snum'] = load_data(in_metric + '_Snum', in_start, in_end
+	METRICS['NHTemp'] = load_data(in_metric + '_NH_Temp', in_start, in_end)
+	METRICS['H1Temp'] = load_data(in_metric + '_H1_Temp', in_start, in_end)
+	METRICS['H2Temp'] = load_data(in_metric + '_H2_Temp', in_start, in_end)
+	METRICS['H3Temp'] = load_data(in_metric + '_H3_Temp', in_start, in_end)
+	METRICS['H4Temp'] = load_data(in_metric + '_H4_Temp', in_start, in_end)
+	METRICS['MoldTemp1'] = load_data(in_metric + '_Mold_Temp1', in_start, in_end)
+	METRICS['MoldTemp2'] = load_data(in_metric + '_Mold_Temp2', in_start, in_end)
+	METRICS['GasTemp'] = load_data(in_metric + '_Gas_Temp', in_start, in_end)
+	METRICS['LNHTemp'] = load_data(in_metirc + '_LNH_Temp', in_start, in_end)
+	METRICS['HopperTemp'] = load_data(in_metric + '_Hopper_Temp', in_start, in_end)
+	METRICS['HVTemp'] = load_data(in_metric + '_HV_Temp', in_start, in_end)
+	METRICS['ReservedTemp1'] = load_data(in_metric + '_Reserved_Temp1', in_start, in_end)
+	METRICS['ReservedTemp2'] = load_data(in_metric + '_Reserved_Temp2', in_start, in_end)
+else :
+	print " no metics "
+	exit()
 
 
-with open('metric.csv', 'w') as csvfile:
-	fieldnames = ['time'] + METRICS.keys()
+with open(csv_name, 'w') as csvfile:
+	fieldnames = ['time'] + sorted(METRICS.keys())
 	writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 	writer.writeheader()
 
