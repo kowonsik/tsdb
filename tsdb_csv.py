@@ -4,6 +4,7 @@ import csv
 import urllib2
 import time
 import sys
+from datetime import datetime, timedelta
 
 
 def load_data(metric, start, end):
@@ -21,7 +22,8 @@ def load_data(metric, start, end):
 		return s
 	
 	#url = 'http://125.7.128.53:4242/api/query?start=2015/05/01-00:00:00&end=2015/06/01-09:46:13&m=sum:F1_R2_BLOCK_41_Cycle_Time'
-	url = 'http://125.7.128.53:4242/api/query?start=%s&end=%s&m=sum:%s' % (start, end, metric)
+	#url = 'http://125.7.128.53:4242/api/query?start=%s&end=%s&m=sum:%s' % (start, end, metric)
+	url = 'http://127.0.0.1:4242/api/query?start=%s&end=%s&m=sum:%s' % (start, end, metric)
 
 	try:
 		u = urllib2.urlopen(url)
@@ -32,6 +34,7 @@ def load_data(metric, start, end):
 	packets = dataParser(data)
 	res = {}
 	i = 0
+
 	for l in packets.split(','):
 		k, v = l.split(':')
 		k = eval(k)
@@ -41,6 +44,7 @@ def load_data(metric, start, end):
 	return res
 
 
+METRICS = {}
 volubility = len(sys.argv)
 
 
@@ -68,7 +72,6 @@ if volubility > 3:
 	print "  sys.argv[%d],pckType = %s" % (3, in_end)
 
 
-METRICS = {}
 #metric_41 = 'F2_R2_BLOCK_41' 
 
 #METRIC_41 = 'F1_R2_BLOCK_41' 
@@ -80,6 +83,7 @@ METRICS = {}
 
 #METRICS['etype1'] = load_data('gyu_RC1_thl.temperature', 820, '2015/06/01-09:55:00', '2015/06/01-09:56:00')
 #METRICS['etype2'] = load_data('gyu_RC1_thl.temperature', 830, '2015/06/01-09:55:00', '2015/06/01-09:56:00')
+
 
 if in_metric == 'F1_R2_BLOCK_41' or in_metric == 'F2_R2_BLOCK_41' :
 	METRICS['Snum'] = load_data(in_metric + '_Snum', in_start, in_end)
@@ -96,7 +100,7 @@ if in_metric == 'F1_R2_BLOCK_41' or in_metric == 'F2_R2_BLOCK_41' :
 	METRICS['MoldInPres'] = load_data(in_metric + '_Mold_In_Pres',in_start, in_end)
 
 elif in_metric == 'F1_R2_BLOCK_50' or in_metric == 'F2_R2_BLOCK_50' :
-	METRICS['Snum'] = load_data(in_metric + '_Snum', in_start, in_end
+	METRICS['Snum'] = load_data(in_metric + '_Snum', in_start, in_end)
 	METRICS['NHTemp'] = load_data(in_metric + '_NH_Temp', in_start, in_end)
 	METRICS['H1Temp'] = load_data(in_metric + '_H1_Temp', in_start, in_end)
 	METRICS['H2Temp'] = load_data(in_metric + '_H2_Temp', in_start, in_end)
@@ -129,11 +133,10 @@ with open(csv_name, 'w') as csvfile:
 	
 	for t in all_times:
 		ctx = {}
-		ctx['time'] = t
+		csv_t = datetime.fromtimestamp(float(t)).strftime('%Y/%m/%d-%H:%M:%S')
+		ctx['time'] = csv_t
 		
 		for metricName in METRICS.keys():
 			if t in METRICS[metricName]:
 				ctx[metricName] = METRICS[metricName][t]
-				#print ctx[metricName]
 		writer.writerow(ctx)
-
