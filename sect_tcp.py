@@ -69,9 +69,14 @@ def sese(s):
 		v3 = tmp * 10
 		
 		t = int(time.time())
-		sys.stdout.write("gyu_RC1_thl.temperature %d %f nodeid=%d\n" % ( t, v1, bigEndian(nodeID)))
-		sys.stdout.write("gyu_RC1_thl.humidity %d %f nodeid=%d\n" % ( t, v2, bigEndian(nodeID)))
-		sys.stdout.write("gyu_RC1_thl.light %d %f nodeid=%d\n" % ( t, v3, bigEndian(nodeID)))
+		if -50 < v1 < 80 :
+				sys.stdout.write( "gyu_RC1_thl.temperature %d %f nodeid=%d\n" % ( t, v1, bigEndian( nodeID ) ))
+		if v2 > 0 :
+			if v1 < 100 :
+				sys.stdout.write( "gyu_RC1_thl.humidity %d %f nodeid=%d\n" % ( t, v2, bigEndian( nodeID ) ))
+		if v3 > 0 :
+			if v3 < 10000 :
+				sys.stdout.write( "gyu_RC1_thl.light %d %f nodeid=%d\n" % ( t, v3, bigEndian( nodeID ) ))
 		
 	elif type == "0070" : # TH
 		temperature = bigEndian( s[48:52] )
@@ -85,17 +90,20 @@ def sese(s):
 		v3 = tmp
 
 		t = int(time.time())
-		if v1 > 0 :
-			if v1 < 35 :
+
+		if -50 < v1 < 80 :
 				sys.stdout.write( "gyu_RC1_thl.temperature %d %f nodeid=%d\n" % ( t, v1, bigEndian( nodeID ) ))
 		if v2 > 0 :
 			if v1 < 100 :
 				sys.stdout.write( "gyu_RC1_thl.humidity %d %f nodeid=%d\n" % ( t, v2, bigEndian( nodeID ) ))
 		if v3 > 0 :
-			if v3 < 5000 :
+			if v3 < 10000 :
 				sys.stdout.write( "gyu_RC1_thl.light %d %f nodeid=%d\n" % ( t, v3, bigEndian( nodeID ) ))
 
 	elif type == "0065":
+		t = int(time.time())
+		pir = bigEndian(s[48:52])
+		sys.stdout.write( "gyu_RC1_pir %d %f nodeid=%d\n" % ( t, pir, bigEndian( nodeID ) ))
 		pass
 	elif type == "0066":
 		ppm = s[48:52]
@@ -118,24 +126,30 @@ def sese(s):
 
 		watt = tmp
 		t = int(time.time())
-		if watt > 0:
-			if watt < 2000 :
+		if watt >= 0:
+			if watt < 3000 :
 				sys.stdout.write( "gyu_RC1_splug.watt %d %f nodeid=%d\n" % (t, watt, bigEndian(nodeID)))
 
 	elif type == "0072": #Splug2
-		rawData = s[54:60]
+		rawData = s[48:56]
 		tmp = bigEndian(rawData)
 		if tmp > 15728640:
 			tmp=0
 		else:
-			tmp = float(tmp/4.127/10)
-
+			tmp = float(tmp/100)
 			watt = tmp
+
+			t_watt_rawData = s[56:64]
+			t_watt_tmp = bigEndian( t_watt_rawData)
+			t_watt_tmp = float( t_watt_tmp / 10000000.0 )
+			t_watt = t_watt_tmp
+
 			t = int(time.time())
-			if watt > 0:
-				if watt < 2000 :
+			if watt >= 0:
+				if watt < 3000 :
 					sys.stdout.write( "gyu_RC1_splug.watt %d %f nodeid=%di\n" % (t, watt, bigEndian(nodeID)))
-			
+			sys.stdout.write( "gyu_RC1_splug.t_watt %d %f nodeid=%d" %(t, t_watt, bigEndian(nodeID)))
+
 	elif type == "00D3" or type == "00d3":       #etype
 		if len(s) < 72:
 			sys.stderr.write("ignore too short data for etype:" + s)
@@ -184,7 +198,42 @@ def handler(clientsock, addr):
 		#print data_in
 		start = data_in[0:2]
 		if( start == '7e'):
-			sese(data_in)
+			p_end = 0
+			packet = ""
+			p_flag = 0
+			p_len = 0
+			recv_len = len(data_in)
+			#print p_len, ",", recv_len
+			while p_len < recv_len:
+				byte = str(data_in[p_len:p_len+2])
+				if(byte == '7e'):
+					if(p_end == 0): # packet start
+						packet = "7e"
+						p_end = 1
+					elif(p_end == 1):# packet end
+						packet = packet + '7e'
+						#print packet
+						sese(packet)
+						p_end = 0
+					p_len += 2
+					continue
+
+				if(byte == '7d'):
+					p_flag = 1
+					pass
+				elif (p_flag == 1):
+					if(byte == '5e'):
+						byte = '7e'
+						packet ='%s%s' % (packet, byte)
+					elif(byte == '5d'):
+						byte = '7d'
+						packet ='%s%s' % (packet, byte)
+					else:
+						break
+				else:
+					packet ='%s%s' % (packet, byte)
+				p_len += 2
+			#:sese(packet)
 		sys.stdout.flush()
 
 if __name__ == '__main__':
